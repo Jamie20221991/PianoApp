@@ -2,7 +2,8 @@
 class PianoApp {
   constructor() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    this.currentOctave = 4;
+    this.startOctave = 2; // Start from octave 2
+    this.numOctaves = 4; // Display 4 octaves
     this.volume = 0.72;
     this.activeNotes = new Map();
     
@@ -29,42 +30,53 @@ class PianoApp {
   renderPiano() {
     const pianoContainer = document.getElementById('piano');
     pianoContainer.innerHTML = '';
+    pianoContainer.style.display = 'flex';
+    pianoContainer.style.position = 'relative';
+    pianoContainer.style.width = '100%';
+    pianoContainer.style.height = '120px';
     
-    // Create keys for current octave
-    this.notes.forEach(note => {
-      const isBlackKey = note.includes('#');
-      const keyElement = document.createElement('button');
-      keyElement.className = `key ${isBlackKey ? 'black-key' : 'white-key'}`;
-      keyElement.textContent = note;
-      keyElement.dataset.note = note;
-      keyElement.dataset.frequency = this.getFrequency(note);
-      
-      keyElement.addEventListener('mousedown', () => this.playNote(note, keyElement));
-      keyElement.addEventListener('mouseup', () => this.stopNote(note, keyElement));
-      keyElement.addEventListener('mouseleave', () => this.stopNote(note, keyElement));
-      keyElement.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        this.playNote(note, keyElement);
+    // Create keys for all 4 octaves
+    for (let octave = this.startOctave; octave < this.startOctave + this.numOctaves; octave++) {
+      this.notes.forEach(note => {
+        const isBlackKey = note.includes('#');
+        const keyElement = document.createElement('button');
+        
+        const noteId = `${note}-${octave}`;
+        keyElement.className = `key ${isBlackKey ? 'black-key' : 'white-key'}`;
+        keyElement.textContent = '';
+        keyElement.dataset.note = note;
+        keyElement.dataset.octave = octave;
+        keyElement.dataset.noteId = noteId;
+        keyElement.dataset.frequency = this.getFrequency(note, octave);
+        
+        keyElement.addEventListener('mousedown', () => this.playNote(note, octave, keyElement));
+        keyElement.addEventListener('mouseup', () => this.stopNote(noteId, keyElement));
+        keyElement.addEventListener('mouseleave', () => this.stopNote(noteId, keyElement));
+        keyElement.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          this.playNote(note, octave, keyElement);
+        });
+        keyElement.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          this.stopNote(noteId, keyElement);
+        });
+        
+        pianoContainer.appendChild(keyElement);
       });
-      keyElement.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        this.stopNote(note, keyElement);
-      });
-      
-      pianoContainer.appendChild(keyElement);
-    });
+    }
   }
   
-  getFrequency(note) {
+  getFrequency(note, octave) {
     const baseFreq = this.noteFrequencies[note];
-    const octaveMultiplier = Math.pow(2, this.currentOctave);
+    const octaveMultiplier = Math.pow(2, octave);
     return baseFreq * octaveMultiplier;
   }
   
-  playNote(note, keyElement) {
-    if (this.activeNotes.has(note)) return; // Prevent multiple simultaneous plays
+  playNote(note, octave, keyElement) {
+    const noteId = `${note}-${octave}`;
+    if (this.activeNotes.has(noteId)) return; // Prevent multiple simultaneous plays
     
-    const frequency = this.getFrequency(note);
+    const frequency = this.getFrequency(note, octave);
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
     
@@ -77,15 +89,15 @@ class PianoApp {
     
     oscillator.start();
     
-    this.activeNotes.set(note, { oscillator, gainNode });
+    this.activeNotes.set(noteId, { oscillator, gainNode });
     keyElement.classList.add('active');
     
     // Update note display
-    document.getElementById('note-display').textContent = `${note} ${this.currentOctave}`;
+    document.getElementById('note-display').textContent = `${note} ${octave}`;
   }
   
-  stopNote(note, keyElement) {
-    const noteData = this.activeNotes.get(note);
+  stopNote(noteId, keyElement) {
+    const noteData = this.activeNotes.get(noteId);
     if (!noteData) return;
     
     const { oscillator, gainNode } = noteData;
@@ -94,14 +106,14 @@ class PianoApp {
     gainNode.gain.setTargetAtTime(0, this.audioContext.currentTime, 0.05);
     setTimeout(() => oscillator.stop(), 100);
     
-    this.activeNotes.delete(note);
+    this.activeNotes.delete(noteId);
     keyElement.classList.remove('active');
   }
   
   setupEventListeners() {
-    // Octave controls
-    document.getElementById('octave-down').addEventListener('click', () => this.changeOctave(-1));
-    document.getElementById('octave-up').addEventListener('click', () => this.changeOctave(1));
+    // Octave controls - change starting octave
+    document.getElementById('octave-down').addEventListener('click', () => this.shiftOctaves(-1));
+    document.getElementById('octave-up').addEventListener('click', () => this.shiftOctaves(1));
     
     // Volume control
     document.getElementById('volume').addEventListener('input', (e) => {
@@ -118,9 +130,15 @@ class PianoApp {
     // Keyboard support
     document.addEventListener('keydown', (e) => {
       const note = this.keyboardMap[e.key.toLowerCase()];
-      if (note && !this.activeNotes.has(note)) {
+      if (note) {
         const keyElement = document.querySelector(`[data-note="${note}"]`);
-        if (keyElement) this.playNote(note, keyElement);
+        if (keyElement) {
+          const octave = parseInt(keyElement.dataset.octave);
+          const noteId = `${note}-${octave}`;
+          if (!this.activeNotes.has(noteId)) {
+            this.playNote(note, octave, keyElement);
+          }
+        }
       }
     });
     
@@ -128,27 +146,39 @@ class PianoApp {
       const note = this.keyboardMap[e.key.toLowerCase()];
       if (note) {
         const keyElement = document.querySelector(`[data-note="${note}"]`);
-        if (keyElement) this.stopNote(note, keyElement);
+        if (keyElement) {
+          const octave = parseInt(keyElement.dataset.octave);
+          const noteId = `${note}-${octave}`;
+          this.stopNote(noteId, keyElement);
+        }
       }
     });
   }
   
-  changeOctave(direction) {
-    this.currentOctave += direction;
-    this.currentOctave = Math.max(1, Math.min(8, this.currentOctave));
-    document.getElementById('octave-label').textContent = `Octave ${this.currentOctave}`;
+  shiftOctaves(direction) {
+    this.startOctave += direction;
+    this.startOctave = Math.max(1, Math.min(5, this.startOctave));
+    document.getElementById('octave-label').textContent = `Octaves ${this.startOctave}-${this.startOctave + this.numOctaves - 1}`;
     this.renderPiano();
   }
   
   playDemo() {
-    const demoSequence = ['C', 'E', 'G', 'C'];
+    const demoSequence = [
+      { note: 'C', octave: this.startOctave },
+      { note: 'E', octave: this.startOctave },
+      { note: 'G', octave: this.startOctave },
+      { note: 'C', octave: this.startOctave + 1 }
+    ];
     let delay = 0;
     
-    demoSequence.forEach((note) => {
+    demoSequence.forEach(({ note, octave }) => {
       setTimeout(() => {
-        const keyElement = document.querySelector(`[data-note="${note}"]`);
-        this.playNote(note, keyElement);
-        setTimeout(() => this.stopNote(note, keyElement), 300);
+        const noteId = `${note}-${octave}`;
+        const keyElement = document.querySelector(`[data-noteId="${noteId}"]`);
+        if (keyElement) {
+          this.playNote(note, octave, keyElement);
+          setTimeout(() => this.stopNote(noteId, keyElement), 300);
+        }
       }, delay);
       delay += 400;
     });
