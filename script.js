@@ -3,7 +3,7 @@ class PianoApp {
   constructor() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     this.startOctave = 2; // Start from octave 2
-    this.numOctaves = 4; // Display 4 octaves
+    this.numOctaves = 3; // Display 4 octaves
     this.volume = 0.72;
     this.activeNotes = new Map();
     
