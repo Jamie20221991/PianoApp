@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glow Piano</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Instrument</p>
+          <h1>Glow Piano</h1>
+        </div>
+
+        <div class="toolbar">
+          <div class="octave-control">
+            <button id="octave-down" aria-label="Lower octave">−</button>
+            <span id="octave-label">Octave 4</span>
+            <button id="octave-up" aria-label="Raise octave">+</button>
+          </div>
+
+          <label class="volume-control" for="volume">
+            <span>Volume</span>
+            <input id="volume" type="range" min="0" max="100" value="72" />
+          </label>
+        </div>
+      </header>
+
+      <main class="piano-panel">
+        <section class="status-card">
+          <div class="status-block">
+            <span class="label">Now playing</span>
+            <strong id="note-display">—</strong>
+          </div>
+
+          <div class="status-block compact">
+            <span class="label">Keys</span>
+            <strong>Mouse / Touch / Keyboard</strong>
+          </div>
+
+          <button id="demo-btn" class="demo-btn">Play demo</button>
+        </section>
+
+        <section id="piano" class="piano" aria-label="Piano keyboard" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
