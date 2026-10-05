@@ -6,6 +6,15 @@ class PianoApp {
     this.numOctaves = 3; // Display 3 octaves
     this.volume = 0.72;
     this.activeNotes = new Map();
+    this.whiteKeyWidth = 58;
+    this.blackKeyWidth = 38;
+    this.blackKeyOffsetMap = {
+      'C#': 1,
+      'D#': 2,
+      'F#': 4,
+      'G#': 5,
+      'A#': 6
+    };
     
     // Note frequencies for A0 (27.5 Hz) and above
     this.noteFrequencies = {
@@ -26,6 +35,12 @@ class PianoApp {
     this.renderPiano();
     this.setupEventListeners();
   }
+
+  getBlackKeyLeft(note, octave) {
+    const whiteOffset = this.blackKeyOffsetMap[note] ?? 0;
+    const octaveOffset = (octave - this.startOctave) * 7;
+    return ((octaveOffset + whiteOffset + 0.5) * this.whiteKeyWidth) - (this.blackKeyWidth / 2);
+  }
   
   renderPiano() {
     const pianoContainer = document.getElementById('piano');
@@ -34,8 +49,9 @@ class PianoApp {
     pianoContainer.style.position = 'relative';
     pianoContainer.style.width = '100%';
     pianoContainer.style.height = '120px';
+    pianoContainer.style.gap = '0';
     
-    // Create keys for all 4 octaves
+    // Create keys for all octaves
     for (let octave = this.startOctave; octave < this.startOctave + this.numOctaves; octave++) {
       this.notes.forEach(note => {
         const isBlackKey = note.includes('#');
@@ -48,6 +64,10 @@ class PianoApp {
         keyElement.dataset.octave = octave;
         keyElement.dataset.noteId = noteId;
         keyElement.dataset.frequency = this.getFrequency(note, octave);
+
+        if (isBlackKey) {
+          keyElement.style.left = `${this.getBlackKeyLeft(note, octave)}px`;
+        }
         
         keyElement.addEventListener('mousedown', () => this.playNote(note, octave, keyElement));
         keyElement.addEventListener('mouseup', () => this.stopNote(noteId, keyElement));
