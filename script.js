@@ -48,7 +48,6 @@ class PianoApp {
     pianoContainer.style.display = 'flex';
     pianoContainer.style.position = 'relative';
     pianoContainer.style.width = '100%';
-    pianoContainer.style.height = '120px';
     pianoContainer.style.gap = '0';
     
     // Create keys for all octaves
