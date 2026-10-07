@@ -20,13 +20,32 @@
         <div class="toolbar">
           <div class="octave-control">
             <button id="octave-down" aria-label="Lower octave">−</button>
-            <span id="octave-label">Octave 4</span>
+            <span id="octave-label">Octaves 2-5</span>
             <button id="octave-up" aria-label="Raise octave">+</button>
           </div>
 
           <label class="volume-control" for="volume">
             <span>Volume</span>
             <input id="volume" type="range" min="0" max="100" value="72" />
+          </label>
+
+          <label class="control-group" for="sustain">
+            <span>Sustain</span>
+            <input id="sustain" type="range" min="0" max="100" value="40" />
+          </label>
+
+          <label class="control-group" for="reverb">
+            <span>Reverb</span>
+            <input id="reverb" type="range" min="0" max="100" value="30" />
+          </label>
+
+          <label class="control-group" for="tone">
+            <span>Tone</span>
+            <select id="tone">
+              <option value="piano">Piano</option>
+              <option value="bright">Bright</option>
+              <option value="warm">Warm</option>
+            </select>
           </label>
         </div>
       </header>
