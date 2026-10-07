@@ -9,6 +9,10 @@ class PianoApp {
     this.tone = 'piano';
     this.activeNotes = new Map();
 
+    // Scale settings
+    this.currentScale = 'major';
+    this.rootNote = 'C';
+
     this.whiteKeyWidth = 60;
     this.blackKeyWidth = 28.5;
     this.blackKeyOffsetMap = {
@@ -28,6 +32,19 @@ class PianoApp {
     this.keyboardMap = {
       'z': 'C', 's': 'C#', 'x': 'D', 'd': 'D#', 'c': 'E', 'v': 'F',
       'g': 'F#', 'b': 'G', 'h': 'G#', 'n': 'A', 'j': 'A#', 'm': 'B'
+    };
+
+    // Scale definitions (intervals from root note in semitones)
+    this.scalePatterns = {
+      'major': [0, 2, 4, 5, 7, 9, 11],
+      'minor': [0, 2, 3, 5, 7, 8, 10],
+      'pentatonic-major': [0, 2, 4, 7, 9],
+      'pentatonic-minor': [0, 3, 5, 7, 10],
+      'blues': [0, 3, 5, 6, 7, 10],
+      'dorian': [0, 2, 3, 5, 7, 9, 10],
+      'phrygian': [0, 1, 3, 5, 7, 8, 10],
+      'lydian': [0, 2, 4, 6, 7, 9, 11],
+      'mixolydian': [0, 2, 4, 5, 7, 9, 10]
     };
 
     this.initAudio();
@@ -70,6 +87,18 @@ class PianoApp {
     return ((octaveOffset + whiteOffset) * this.whiteKeyWidth) - (this.blackKeyWidth / 2);
   }
 
+  // Check if a note is in the current scale
+  isNoteInScale(note, octave) {
+    const noteIndex = this.notes.indexOf(note);
+    const rootIndex = this.notes.indexOf(this.rootNote);
+    const pattern = this.scalePatterns[this.currentScale];
+    
+    // Calculate the semitone distance from the root note
+    let distance = (noteIndex - rootIndex + 12) % 12;
+    
+    return pattern.includes(distance);
+  }
+
   renderPiano() {
     const pianoContainer = document.getElementById('piano');
     pianoContainer.innerHTML = '';
@@ -83,8 +112,9 @@ class PianoApp {
         const isBlackKey = note.includes('#');
         const keyElement = document.createElement('button');
         const noteId = `${note}-${octave}`;
+        const inScale = this.isNoteInScale(note, octave);
 
-        keyElement.className = `key ${isBlackKey ? 'black-key' : 'white-key'}`;
+        keyElement.className = `key ${isBlackKey ? 'black-key' : 'white-key'} ${inScale ? 'in-scale' : 'out-of-scale'}`;
         keyElement.dataset.note = note;
         keyElement.dataset.octave = octave;
         keyElement.dataset.noteId = noteId;
@@ -238,8 +268,15 @@ class PianoApp {
   }
 
   setupEventListeners() {
-    document.getElementById('octave-down').addEventListener('click', () => this.shiftOctaves(-1));
-    document.getElementById('octave-up').addEventListener('click', () => this.shiftOctaves(1));
+    document.getElementById('scale-select').addEventListener('change', (e) => {
+      this.currentScale = e.target.value;
+      this.renderPiano();
+    });
+
+    document.getElementById('root-note-select').addEventListener('change', (e) => {
+      this.rootNote = e.target.value;
+      this.renderPiano();
+    });
 
     document.getElementById('volume').addEventListener('input', (e) => {
       this.volume = e.target.value / 100;
@@ -286,13 +323,6 @@ class PianoApp {
       const noteId = `${note}-${octave}`;
       this.stopNote(noteId, keyElement);
     });
-  }
-
-  shiftOctaves(direction) {
-    this.startOctave += direction;
-    this.startOctave = Math.max(1, Math.min(5, this.startOctave));
-    document.getElementById('octave-label').textContent = `Octaves ${this.startOctave}-${this.startOctave + this.numOctaves - 1}`;
-    this.renderPiano();
   }
 
   playDemo() {
