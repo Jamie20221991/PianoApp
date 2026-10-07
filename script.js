@@ -7,13 +7,13 @@ class PianoApp {
     this.volume = 0.72;
     this.activeNotes = new Map();
     this.whiteKeyWidth = 60;
-    this.blackKeyWidth = 38;
+    this.blackKeyWidth = 28.5;
     this.blackKeyOffsetMap = {
-      'C#': 1,
-      'D#': 2,
-      'F#': 4,
-      'G#': 5,
-      'A#': 6
+      'C#': 0.5,
+      'D#': 1.5,
+      'F#': 3.5,
+      'G#': 4.5,
+      'A#': 5.5
     };
     
     // Note frequencies for A0 (27.5 Hz) and above
@@ -39,7 +39,7 @@ class PianoApp {
   getBlackKeyLeft(note, octave) {
     const whiteOffset = this.blackKeyOffsetMap[note] ?? 0;
     const octaveOffset = (octave - this.startOctave) * 7;
-    return ((octaveOffset + whiteOffset + 0.5) * this.whiteKeyWidth) - (this.blackKeyWidth / 2);
+    return ((octaveOffset + whiteOffset) * this.whiteKeyWidth) - (this.blackKeyWidth / 2);
   }
   
   renderPiano() {
