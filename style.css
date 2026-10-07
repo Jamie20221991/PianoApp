@@ -52,7 +52,7 @@ body {
   padding: 32px 18px;
 }
 
-button, input {
+button, input, select {
   font: inherit;
 }
 
@@ -120,18 +120,21 @@ h1 {
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.octave-control {
+.octave-control,
+.control-group,
+.volume-control {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
+  gap: 10px;
+  padding: 10px 14px;
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(101, 63, 42, 0.8), rgba(89, 56, 38, 0.72));
   border: 1px solid rgba(227, 190, 141, 0.25);
+  color: var(--muted);
   box-shadow: inset 0 1px 0 rgba(255, 235, 203, 0.12);
 }
 
@@ -165,21 +168,18 @@ h1 {
   color: var(--gold-soft);
 }
 
-.volume-control {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, rgba(101, 63, 42, 0.8), rgba(89, 56, 38, 0.72));
-  border: 1px solid rgba(227, 190, 141, 0.25);
-  color: var(--muted);
-  box-shadow: inset 0 1px 0 rgba(255, 235, 203, 0.12);
+.volume-control input,
+.control-group input[type="range"] {
+  width: 90px;
+  accent-color: #d49d5d;
 }
 
-.volume-control input {
-  width: 120px;
-  accent-color: #d49d5d;
+.control-group select {
+  background: rgba(24, 14, 10, 0.55);
+  color: var(--text);
+  border: 1px solid rgba(227, 190, 141, 0.2);
+  border-radius: 8px;
+  padding: 6px 10px;
 }
 
 .piano-panel {
@@ -379,6 +379,16 @@ h1 {
   .topbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .toolbar {
+    width: 100%;
+  }
+
+  .control-group,
+  .volume-control {
+    flex: 1 1 100%;
+    justify-content: space-between;
   }
 
   .status-card {
