@@ -12,6 +12,7 @@ class PianoApp {
     // Scale settings
     this.currentScale = 'major';
     this.rootNote = 'C';
+    this.pianoStyle = 'classic';
 
     this.whiteKeyWidth = 60;
     this.blackKeyWidth = 28.5;
@@ -34,6 +35,121 @@ class PianoApp {
       'g': 'F#', 'b': 'G', 'h': 'G#', 'n': 'A', 'j': 'A#', 'm': 'B'
     };
 
+    this.styleThemes = {
+      classic: {
+        'bg-1': '#1a0f09',
+        'bg-2': '#2d1b12',
+        'bg-3': '#3c2617',
+        'app-shell-top': 'rgba(111, 71, 49, 0.92)',
+        'app-shell-mid': 'rgba(56, 31, 18, 0.92)',
+        'app-shell-bottom': 'rgba(28, 16, 11, 0.96)',
+        'topbar-top': 'rgba(77, 49, 32, 0.9)',
+        'topbar-bottom': 'rgba(46, 27, 17, 0.75)',
+        'toolbar-bg-top': 'rgba(101, 63, 42, 0.8)',
+        'toolbar-bg-bottom': 'rgba(89, 56, 38, 0.72)',
+        'panel-bg-top': 'rgba(53, 31, 22, 0.9)',
+        'panel-bg-bottom': 'rgba(29, 17, 12, 0.8)',
+        'piano-top': 'rgba(69,42,27,0.98)',
+        'piano-mid': 'rgba(42,27,18,0.96)',
+        'piano-bottom': 'rgba(21,12,9,0.98)',
+        'white-key': '#fefaf4',
+        'white-key-2': '#f4ecdf',
+        'white-key-3': '#e8dcc4',
+        'black-key-1': '#120b08',
+        'black-key-2': '#1f130f',
+        'black-key-3': '#2d1d15',
+        'gold-soft': '#f3d8a6',
+        'muted': '#d7b98a',
+        'button-grad-1': '#ab6d43',
+        'button-grad-2': '#d49d5d',
+        'scale-glow': 'rgba(248, 218, 165, 0.45)'
+      },
+      concert: {
+        'bg-1': '#0b1015',
+        'bg-2': '#18202a',
+        'bg-3': '#202d3d',
+        'app-shell-top': 'rgba(18, 24, 32, 0.98)',
+        'app-shell-mid': 'rgba(25, 31, 41, 0.96)',
+        'app-shell-bottom': 'rgba(9, 12, 18, 1)',
+        'topbar-top': 'rgba(24, 32, 42, 0.96)',
+        'topbar-bottom': 'rgba(15, 20, 27, 0.9)',
+        'toolbar-bg-top': 'rgba(37, 46, 58, 0.92)',
+        'toolbar-bg-bottom': 'rgba(20, 28, 35, 0.86)',
+        'panel-bg-top': 'rgba(17, 22, 29, 0.9)',
+        'panel-bg-bottom': 'rgba(10, 14, 18, 0.92)',
+        'piano-top': 'rgba(16, 18, 22, 0.98)',
+        'piano-mid': 'rgba(24, 29, 35, 0.98)',
+        'piano-bottom': 'rgba(8, 10, 14, 1)',
+        'white-key': '#f7f7f9',
+        'white-key-2': '#edf0f5',
+        'white-key-3': '#dfe5ed',
+        'black-key-1': '#05080d',
+        'black-key-2': '#111821',
+        'black-key-3': '#1b2430',
+        'gold-soft': '#dfeaf8',
+        'muted': '#b9c8d9',
+        'button-grad-1': '#5a7ca8',
+        'button-grad-2': '#93b8d9',
+        'scale-glow': 'rgba(140, 200, 255, 0.55)'
+      },
+      vintage: {
+        'bg-1': '#230d0b',
+        'bg-2': '#3c1b15',
+        'bg-3': '#5a2e22',
+        'app-shell-top': 'rgba(95, 53, 41, 0.95)',
+        'app-shell-mid': 'rgba(73, 37, 29, 0.94)',
+        'app-shell-bottom': 'rgba(42, 19, 15, 0.96)',
+        'topbar-top': 'rgba(84, 45, 36, 0.92)',
+        'topbar-bottom': 'rgba(54, 28, 22, 0.8)',
+        'toolbar-bg-top': 'rgba(110, 63, 48, 0.78)',
+        'toolbar-bg-bottom': 'rgba(83, 48, 39, 0.74)',
+        'panel-bg-top': 'rgba(68, 39, 31, 0.9)',
+        'panel-bg-bottom': 'rgba(34, 20, 17, 0.82)',
+        'piano-top': 'rgba(58, 31, 24, 0.98)',
+        'piano-mid': 'rgba(42, 24, 18, 0.96)',
+        'piano-bottom': 'rgba(24, 12, 10, 0.98)',
+        'white-key': '#f9f2e8',
+        'white-key-2': '#ecddd0',
+        'white-key-3': '#dcc4b3',
+        'black-key-1': '#120907',
+        'black-key-2': '#1b0f0d',
+        'black-key-3': '#2b1715',
+        'gold-soft': '#f4d5a8',
+        'muted': '#d3a07a',
+        'button-grad-1': '#a75c3e',
+        'button-grad-2': '#d39b63',
+        'scale-glow': 'rgba(255, 185, 100, 0.42)'
+      },
+      modern: {
+        'bg-1': '#111720',
+        'bg-2': '#1a2430',
+        'bg-3': '#2a3340',
+        'app-shell-top': 'rgba(31, 39, 48, 0.96)',
+        'app-shell-mid': 'rgba(21, 27, 34, 0.94)',
+        'app-shell-bottom': 'rgba(12, 17, 22, 0.98)',
+        'topbar-top': 'rgba(41, 52, 64, 0.96)',
+        'topbar-bottom': 'rgba(25, 34, 41, 0.88)',
+        'toolbar-bg-top': 'rgba(60, 72, 82, 0.88)',
+        'toolbar-bg-bottom': 'rgba(35, 45, 52, 0.82)',
+        'panel-bg-top': 'rgba(21, 28, 35, 0.9)',
+        'panel-bg-bottom': 'rgba(12, 17, 21, 0.88)',
+        'piano-top': 'rgba(26, 31, 37, 0.98)',
+        'piano-mid': 'rgba(19, 23, 28, 0.96)',
+        'piano-bottom': 'rgba(8, 11, 15, 1)',
+        'white-key': '#f3f6f9',
+        'white-key-2': '#e6edf3',
+        'white-key-3': '#d7e0e9',
+        'black-key-1': '#090d12',
+        'black-key-2': '#141c24',
+        'black-key-3': '#202d38',
+        'gold-soft': '#dfe9f6',
+        'muted': '#a9b7c8',
+        'button-grad-1': '#6d7f90',
+        'button-grad-2': '#adc3d8',
+        'scale-glow': 'rgba(170, 214, 255, 0.5)'
+      }
+    };
+
     // Scale definitions (intervals from root note in semitones)
     this.scalePatterns = {
       'major': [0, 2, 4, 5, 7, 9, 11],
@@ -49,6 +165,15 @@ class PianoApp {
 
     this.initAudio();
     this.init();
+  }
+
+  applyTheme() {
+    const theme = this.styleThemes[this.pianoStyle] || this.styleThemes.classic;
+    const root = document.documentElement;
+
+    Object.entries(theme).forEach(([key, value]) => {
+      root.style.setProperty(`--${key}`, value);
+    });
   }
 
   initAudio() {
@@ -77,6 +202,7 @@ class PianoApp {
   }
 
   init() {
+    this.applyTheme();
     this.renderPiano();
     this.setupEventListeners();
   }
@@ -92,10 +218,10 @@ class PianoApp {
     const noteIndex = this.notes.indexOf(note);
     const rootIndex = this.notes.indexOf(this.rootNote);
     const pattern = this.scalePatterns[this.currentScale];
-    
+
     // Calculate the semitone distance from the root note
     let distance = (noteIndex - rootIndex + 12) % 12;
-    
+
     return pattern.includes(distance);
   }
 
@@ -275,6 +401,12 @@ class PianoApp {
 
     document.getElementById('root-note-select').addEventListener('change', (e) => {
       this.rootNote = e.target.value;
+      this.renderPiano();
+    });
+
+    document.getElementById('style-select').addEventListener('change', (e) => {
+      this.pianoStyle = e.target.value;
+      this.applyTheme();
       this.renderPiano();
     });
 

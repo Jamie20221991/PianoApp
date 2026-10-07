@@ -9,9 +9,18 @@
   --wood-5: #c58d5e;
   --wood-6: #e3be8d;
 
-  --panel-top: rgba(66, 39, 23, 0.96);
-  --panel-mid: rgba(45, 26, 17, 0.9);
-  --panel-bottom: rgba(26, 15, 9, 0.96);
+  --app-shell-top: rgba(111, 71, 49, 0.92);
+  --app-shell-mid: rgba(56, 31, 18, 0.92);
+  --app-shell-bottom: rgba(28, 16, 11, 0.96);
+  --topbar-top: rgba(77, 49, 32, 0.9);
+  --topbar-bottom: rgba(46, 27, 17, 0.75);
+  --toolbar-bg-top: rgba(101, 63, 42, 0.8);
+  --toolbar-bg-bottom: rgba(89, 56, 38, 0.72);
+  --panel-bg-top: rgba(53, 31, 22, 0.9);
+  --panel-bg-bottom: rgba(29, 17, 12, 0.8);
+  --piano-top: rgba(69,42,27,0.98);
+  --piano-mid: rgba(42,27,18,0.96);
+  --piano-bottom: rgba(21,12,9,0.98);
 
   --white-key: #fefaf4;
   --white-key-2: #f4ecdf;
@@ -29,6 +38,9 @@
   --muted: #d7b98a;
   --ink: #2b170f;
   --shadow: rgba(0, 0, 0, 0.48);
+  --button-grad-1: #ab6d43;
+  --button-grad-2: #d49d5d;
+  --scale-glow: rgba(248, 218, 165, 0.45);
 }
 
 * {
@@ -59,7 +71,7 @@ button, input, select {
 .app-shell {
   width: min(1200px, 100%);
   background:
-    linear-gradient(180deg, rgba(111, 71, 49, 0.92) 0%, rgba(56, 31, 18, 0.92) 24%, rgba(28, 16, 11, 0.96) 100%);
+    linear-gradient(180deg, var(--app-shell-top) 0%, var(--app-shell-mid) 24%, var(--app-shell-bottom) 100%);
   border: 1px solid rgba(217, 176, 106, 0.3);
   box-shadow:
     0 28px 80px rgba(0, 0, 0, 0.7),
@@ -95,7 +107,7 @@ button, input, select {
   padding: 28px 30px 18px;
   border-bottom: 1px solid rgba(232, 203, 159, 0.18);
   background:
-    linear-gradient(180deg, rgba(77, 49, 32, 0.9) 0%, rgba(46, 27, 17, 0.75) 100%);
+    linear-gradient(180deg, var(--topbar-top) 0%, var(--topbar-bottom) 100%);
   box-shadow: inset 0 1px 0 rgba(255, 240, 216, 0.12);
 }
 
@@ -132,7 +144,7 @@ h1 {
   gap: 10px;
   padding: 10px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(101, 63, 42, 0.8), rgba(89, 56, 38, 0.72));
+  background: linear-gradient(135deg, var(--toolbar-bg-top), var(--toolbar-bg-bottom));
   border: 1px solid rgba(227, 190, 141, 0.25);
   color: var(--muted);
   box-shadow: inset 0 1px 0 rgba(255, 235, 203, 0.12);
@@ -145,7 +157,7 @@ h1 {
   border-radius: 50%;
   font-size: 24px;
   color: #fffaf5;
-  background: linear-gradient(135deg, #ab6d43, #d49d5d);
+  background: linear-gradient(135deg, var(--button-grad-1), var(--button-grad-2));
   cursor: pointer;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.28),
@@ -171,7 +183,7 @@ h1 {
 .volume-control input,
 .control-group input[type="range"] {
   width: 90px;
-  accent-color: #d49d5d;
+  accent-color: var(--button-grad-2);
 }
 
 .control-group select {
@@ -196,7 +208,7 @@ h1 {
   padding: 18px 20px;
   margin-bottom: 24px;
   border: 1px solid rgba(227, 190, 141, 0.2);
-  background: linear-gradient(135deg, rgba(53, 31, 22, 0.9), rgba(29, 17, 12, 0.8));
+  background: linear-gradient(135deg, var(--panel-bg-top), var(--panel-bg-bottom));
   border-radius: 18px;
   box-shadow: inset 0 1px 0 rgba(255, 235, 203, 0.08), 0 12px 26px rgba(0,0,0,0.18);
 }
@@ -232,7 +244,7 @@ h1 {
   border-radius: 12px;
   padding: 14px 18px;
   color: #fffaf5;
-  background: linear-gradient(135deg, #b8794a, #d2a362);
+  background: linear-gradient(135deg, var(--button-grad-1), var(--button-grad-2));
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.26),
     0 12px 22px rgba(0,0,0,0.28);
@@ -257,7 +269,7 @@ h1 {
   height: 300px;
   border-radius: 22px;
   background:
-    linear-gradient(180deg, rgba(69,42,27,0.98) 0%, rgba(42,27,18,0.96) 40%, rgba(21,12,9,0.98) 100%);
+    linear-gradient(180deg, var(--piano-top) 0%, var(--piano-mid) 40%, var(--piano-bottom) 100%);
   border: 1.5px solid rgba(227, 190, 141, 0.2);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.08),
@@ -282,7 +294,6 @@ h1 {
   touch-action: manipulation;
 }
 
-/* White keys - in scale (bright) */
 .white-key.in-scale {
   background:
     linear-gradient(180deg, #fffdf9 0%, #f8f1e8 38%, #eadbc0 100%);
@@ -290,13 +301,12 @@ h1 {
     inset 0 3px 0 rgba(255,255,255,0.8),
     inset 0 -10px 14px rgba(126, 82, 49, 0.08),
     0 10px 20px rgba(0,0,0,0.18),
-    0 0 20px rgba(248, 218, 165, 0.4);
+    0 0 20px var(--scale-glow);
 }
 
-/* White keys - out of scale (dimmed) */
 .white-key.out-of-scale {
   background:
-    linear-gradient(180deg, #e8dcc4 0%, #d9cbb5 38%, #c9baa5 100%);
+    linear-gradient(180deg, var(--white-key) 0%, var(--white-key-2) 38%, var(--white-key-3) 100%);
   opacity: 0.6;
   box-shadow:
     inset 0 3px 0 rgba(255,255,255,0.4),
@@ -308,6 +318,7 @@ h1 {
   width: 60px;
   height: 100%;
   border-radius: 0 0 16px 16px;
+  background: linear-gradient(180deg, var(--white-key) 0%, var(--white-key-2) 38%, var(--white-key-3) 100%);
   border: 1px solid rgba(39, 20, 12, 0.18);
   display: flex;
   align-items: flex-end;
@@ -316,7 +327,7 @@ h1 {
   color: rgba(43, 23, 15, 0.7);
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.2s ease;
 }
 
 .white-key::before {
@@ -347,16 +358,14 @@ h1 {
     0 8px 15px rgba(0,0,0,0.2);
 }
 
-/* Black keys - in scale (bright) */
 .black-key.in-scale {
   background: linear-gradient(180deg, #3a2a1f, #1f130f);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.12),
     0 12px 18px rgba(0,0,0,0.38),
-    0 0 18px rgba(255, 200, 100, 0.35);
+    0 0 18px var(--scale-glow);
 }
 
-/* Black keys - out of scale (dimmed) */
 .black-key.out-of-scale {
   background: linear-gradient(180deg, var(--black-key-2), var(--black-key-1));
   opacity: 0.5;
@@ -371,6 +380,7 @@ h1 {
   height: 62%;
   top: 18px;
   border-radius: 0 0 12px 12px;
+  background: linear-gradient(180deg, var(--black-key-2), var(--black-key-1));
   border: 1px solid rgba(255,255,255,0.06);
   color: rgba(255,255,255,0.7);
   display: flex;
@@ -381,7 +391,7 @@ h1 {
   font-weight: 700;
   z-index: 2;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.2s ease;
 }
 
 .black-key::before {
@@ -435,3 +445,4 @@ h1 {
     min-width: 32px;
   }
 }
+
