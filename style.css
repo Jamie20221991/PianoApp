@@ -254,7 +254,7 @@ h1 {
   justify-content: center;
   width: min(100%, 1100px);
   margin: 0 auto;
-  height: 400px;
+  height: 300px;
   border-radius: 22px;
   background:
     linear-gradient(180deg, rgba(69,42,27,0.98) 0%, rgba(42,27,18,0.96) 40%, rgba(21,12,9,0.98) 100%);
@@ -283,7 +283,7 @@ h1 {
 }
 
 .white-key {
-  width: 80px;
+  width: 60px;
   height: 100%;
   border-radius: 0 0 16px 16px;
   background:
@@ -333,7 +333,7 @@ h1 {
 
 .black-key {
   position: absolute;
-  width: 38px;
+  width: 28.5px;
   height: 62%;
   top: 18px;
   border-radius: 0 0 12px 12px;
@@ -388,10 +388,10 @@ h1 {
   .piano {
     overflow-x: auto;
     justify-content: flex-start;
-    height: 300px;
+    height: 225px;
   }
 
   .white-key {
-    min-width: 42px;
+    min-width: 32px;
   }
 }
