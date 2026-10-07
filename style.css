@@ -282,17 +282,33 @@ h1 {
   touch-action: manipulation;
 }
 
+/* White keys - in scale (bright) */
+.white-key.in-scale {
+  background:
+    linear-gradient(180deg, #fffdf9 0%, #f8f1e8 38%, #eadbc0 100%);
+  box-shadow:
+    inset 0 3px 0 rgba(255,255,255,0.8),
+    inset 0 -10px 14px rgba(126, 82, 49, 0.08),
+    0 10px 20px rgba(0,0,0,0.18),
+    0 0 20px rgba(248, 218, 165, 0.4);
+}
+
+/* White keys - out of scale (dimmed) */
+.white-key.out-of-scale {
+  background:
+    linear-gradient(180deg, #e8dcc4 0%, #d9cbb5 38%, #c9baa5 100%);
+  opacity: 0.6;
+  box-shadow:
+    inset 0 3px 0 rgba(255,255,255,0.4),
+    inset 0 -10px 14px rgba(126, 82, 49, 0.08),
+    0 10px 20px rgba(0,0,0,0.18);
+}
+
 .white-key {
   width: 60px;
   height: 100%;
   border-radius: 0 0 16px 16px;
-  background:
-    linear-gradient(180deg, var(--white-key) 0%, var(--white-key-2) 38%, var(--white-key-3) 100%);
   border: 1px solid rgba(39, 20, 12, 0.18);
-  box-shadow:
-    inset 0 3px 0 rgba(255,255,255,0.7),
-    inset 0 -10px 14px rgba(126, 82, 49, 0.08),
-    0 10px 20px rgba(0,0,0,0.18);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -331,13 +347,30 @@ h1 {
     0 8px 15px rgba(0,0,0,0.2);
 }
 
+/* Black keys - in scale (bright) */
+.black-key.in-scale {
+  background: linear-gradient(180deg, #3a2a1f, #1f130f);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 12px 18px rgba(0,0,0,0.38),
+    0 0 18px rgba(255, 200, 100, 0.35);
+}
+
+/* Black keys - out of scale (dimmed) */
+.black-key.out-of-scale {
+  background: linear-gradient(180deg, var(--black-key-2), var(--black-key-1));
+  opacity: 0.5;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 12px 18px rgba(0,0,0,0.38);
+}
+
 .black-key {
   position: absolute;
   width: 28.5px;
   height: 62%;
   top: 18px;
   border-radius: 0 0 12px 12px;
-  background: linear-gradient(180deg, var(--black-key-2), var(--black-key-1));
   border: 1px solid rgba(255,255,255,0.06);
   color: rgba(255,255,255,0.7);
   display: flex;
@@ -348,9 +381,6 @@ h1 {
   font-weight: 700;
   z-index: 2;
   cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    0 12px 18px rgba(0,0,0,0.38);
   transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
