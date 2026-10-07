@@ -6,7 +6,7 @@ class PianoApp {
     this.numOctaves = 3; // Display 3 octaves
     this.volume = 0.72;
     this.activeNotes = new Map();
-    this.whiteKeyWidth = 58;
+    this.whiteKeyWidth = 60;
     this.blackKeyWidth = 38;
     this.blackKeyOffsetMap = {
       'C#': 1,
