@@ -474,4 +474,79 @@ h1 {
   outline-offset: -3px;
   z-index: 3;
 }
+/* ---- Scale highlighting: paste at the very end of style.css (after the previous block) ---- */
+
+/* Labels: note name, with the computer-key hint underneath */
+.white-key,
+.black-key {
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+}
+.white-key { padding-bottom: 22px; }
+.black-key { padding-bottom: 16px; }
+
+.note-name { font-size: 12px; font-weight: 800; line-height: 1; }
+.kbd-hint  { font-size: 10px; font-weight: 600; line-height: 1; opacity: 0.55; }
+.black-key .note-name { color: rgba(255, 255, 255, 0.8); }
+
+/* Out of scale: clearly dimmed (no more see-through opacity) */
+.white-key.out-of-scale {
+  opacity: 1;
+  filter: brightness(0.5) saturate(0.7);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.2), 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+.black-key.out-of-scale {
+  opacity: 1;
+  filter: brightness(0.55);
+}
+
+/* In scale: bright, with a glowing strip on the key */
+.white-key.in-scale::after,
+.black-key.in-scale::after {
+  content: '';
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  bottom: 7px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--gold);
+  box-shadow: 0 0 10px var(--scale-glow);
+  pointer-events: none;
+}
+.black-key.in-scale {
+  background: linear-gradient(180deg, #5a4030, #2a1a12);
+}
+
+/* Root note: a bigger strip and a warm tint so you can see where the scale starts */
+.white-key.is-root {
+  background: linear-gradient(180deg, #fff3d6 0%, #f9dfaa 55%, #f0c777 100%);
+}
+.black-key.is-root {
+  background: linear-gradient(180deg, #7a5336, #3a2416);
+}
+.white-key.is-root::after,
+.black-key.is-root::after {
+  left: 15%;
+  right: 15%;
+  height: 7px;
+  background: var(--gold-soft);
+  box-shadow: 0 0 16px var(--gold);
+}
+
+/* Pressed keys always win, so you can see what is sounding */
+.white-key.active {
+  filter: none;
+  opacity: 1;
+  background: linear-gradient(180deg, #ffd98a 0%, #f0b64f 100%);
+  box-shadow: 0 0 24px var(--scale-glow), inset 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+.black-key.active {
+  filter: none;
+  opacity: 1;
+  background: linear-gradient(180deg, #b27a4f, #6b442f);
+  box-shadow: 0 0 20px var(--scale-glow);
+}
 
