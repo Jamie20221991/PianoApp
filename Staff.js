@@ -1,17 +1,55 @@
 // StaffReel: shows the notes you play on a scrolling grand staff (treble + bass clef).
 // New notes appear on the right and scroll left, like a tape.
+// It also names chords (Cmaj, Amin, G7 ...) and can play a whole chord when you click a key.
 // This file starts itself (see the bottom), so script.js does not need any changes.
 
 const CLEF_FONT = '"Noto Music", "Segoe UI Symbol", "Apple Symbols", serif';
+
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+// Chord shapes: [name, semitones above the root]
+const CHORDS = [
+  ['maj', [0, 4, 7]], ['min', [0, 3, 7]], ['dim', [0, 3, 6]], ['aug', [0, 4, 8]],
+  ['sus2', [0, 2, 7]], ['sus4', [0, 5, 7]],
+  ['7', [0, 4, 7, 10]], ['maj7', [0, 4, 7, 11]], ['min7', [0, 3, 7, 10]],
+  ['dim7', [0, 3, 6, 9]], ['m7b5', [0, 3, 6, 10]],
+  ['6', [0, 4, 7, 9]], ['min6', [0, 3, 7, 9]], ['add9', [0, 2, 4, 7]],
+  ['5', [0, 7]]
+];
+
+// The same scale shapes as script.js (semitones from the root note)
+const SCALES = {
+  'major': [0, 2, 4, 5, 7, 9, 11],
+  'minor': [0, 2, 3, 5, 7, 8, 10],
+  'pentatonic-major': [0, 2, 4, 7, 9],
+  'pentatonic-minor': [0, 3, 5, 7, 10],
+  'blues': [0, 3, 5, 6, 7, 10],
+  'dorian': [0, 2, 3, 5, 7, 9, 10],
+  'phrygian': [0, 1, 3, 5, 7, 8, 10],
+  'lydian': [0, 2, 4, 6, 7, 9, 11],
+  'mixolydian': [0, 2, 4, 5, 7, 9, 10]
+};
+
+// The chord you get by clicking a key: stack two thirds on that note, using the chosen scale.
+// Returns semitones above the clicked note, e.g. [0, 4, 7] for a major chord.
+function triadFor(pitchClass, scaleName, rootName) {
+  const pattern = SCALES[scaleName] || SCALES.major;
+  const rootPc = Math.max(0, NOTE_NAMES.indexOf(rootName));
+  const degree = pattern.indexOf((pitchClass - rootPc + 12) % 12);
+  if (degree === -1) return [0, 4, 7]; // note outside the scale: plain major chord
+  const n = pattern.length;
+  const above = (steps) => (pattern[(degree + steps) % n] - pattern[degree] + 12) % 12;
+  return [0, above(2), above(4)];
+}
 
 class StaffReel {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.events = [];        // { t, step, sharp, name, octave }
+    this.events = [];        // { t, step, sharp, name, octave, midi }
     this.showNames = true;
     this.speed = 100;        // pixels per second
-    this.groupWindow = 90;   // ms: notes pressed this close together are drawn as a chord
+    this.groupWindow = 120;  // ms: notes pressed this close together are drawn as a chord
     this.lastGroupTime = 0;
     this.raf = null;
     this.clefs = [];
@@ -53,7 +91,8 @@ class StaffReel {
       step: octave * 7 + this.letters[note[0]],
       sharp: note.includes('#'),
       name: note,
-      octave
+      octave,
+      midi: (octave + 1) * 12 + NOTE_NAMES.indexOf(note)
     });
     this.start();
   }
@@ -182,6 +221,13 @@ class StaffReel {
         prevStep = e.step;
         prevShifted = shifted;
       });
+
+      // Chord name (Cmaj, Amin, G7 ...) above the highest note
+      const label = this.chordName(list);
+      if (label) {
+        const highest = Math.min(...list.map(e => this.y(e.step)));
+        this.drawChordLabel(label, x, highest, alpha);
+      }
     });
 
     ctx.globalAlpha = 1;
@@ -262,6 +308,60 @@ class StaffReel {
     ctx.globalAlpha = 1;
   }
 
+  // Works out a chord name from the notes pressed together, or null if it is not a chord
+  chordName(list) {
+    const midis = list.map(e => e.midi);
+    const pcs = [...new Set(midis.map(m => m % 12))];
+    if (pcs.length < 2) return null;
+
+    const bass = Math.min(...midis) % 12;
+    // Try the lowest note as the root first, then the others (that gives inversions like C/E)
+    const roots = [bass, ...pcs.filter(p => p !== bass)];
+    for (const root of roots) {
+      const shape = pcs.map(p => (p - root + 12) % 12).sort((a, b) => a - b);
+      const match = CHORDS.find(([, set]) =>
+        set.length === shape.length && set.every((v, i) => v === shape[i]));
+      if (match) {
+        const slash = root !== bass ? `/${NOTE_NAMES[bass]}` : '';
+        return `${NOTE_NAMES[root]}${match[0]}${slash}`;
+      }
+    }
+    return null;
+  }
+
+  drawChordLabel(text, x, topY, alpha) {
+    const { ctx, half } = this;
+    const size = Math.max(13, half * 3);
+    ctx.font = `800 ${size}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const w = ctx.measureText(text).width + 18;
+    const h = size + 8;
+    const y = Math.max(h / 2 + 2, topY - half * 4.5);
+
+    // Soft pill behind the text
+    ctx.globalAlpha = alpha * 0.2;
+    ctx.fillStyle = this.accent;
+    const left = x - w / 2;
+    const top = y - h / 2;
+    const r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(left + r, top);
+    ctx.arcTo(left + w, top, left + w, top + h, r);
+    ctx.arcTo(left + w, top + h, left, top + h, r);
+    ctx.arcTo(left, top + h, left, top, r);
+    ctx.arcTo(left, top, left + w, top, r);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = this.ink;
+    ctx.fillText(text, x, y);
+    ctx.textAlign = 'left';
+    ctx.globalAlpha = 1;
+  }
+
   // Sharp sign drawn from lines, so it does not depend on any font
   drawSharp(x, y) {
     const { ctx, half: s } = this;
@@ -309,17 +409,90 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // New checkbox "Click plays a chord", added here so index.html needs no change
+  const chordToggle = document.createElement('label');
+  chordToggle.className = 'staff-toggle';
+  chordToggle.innerHTML = '<input type="checkbox" id="chord-mode" checked /> Click plays a chord';
+  const header = document.querySelector('.staff-header');
+  if (header) header.insertBefore(chordToggle, clear || null);
+  const chordBox = chordToggle.querySelector('input');
+  chordBox.addEventListener('change', (e) => e.target.blur());
+
+  // Remember when the mouse or a finger last pressed a piano key
+  // (computer-keyboard presses never play a chord for you, so you can build your own)
+  let lastPointerDown = 0;
+  piano.addEventListener('pointerdown', (e) => {
+    if (e.isTrusted) lastPointerDown = performance.now();
+  }, true);
+
+  // Keys that were pressed for you as part of a chord: root key id -> other keys
+  const chordParts = new Map();
+
+  const pressChord = (rootKey) => {
+    const keys = Array.from(piano.querySelectorAll('.key')); // lowest note first, C of the first octave at 0
+    const rootIndex = keys.indexOf(rootKey);
+    if (rootIndex < 0) return;
+
+    const scale = document.getElementById('scale-select');
+    const root = document.getElementById('root-note-select');
+    const intervals = triadFor(rootIndex % 12, scale && scale.value, root && root.value);
+
+    const parts = [];
+    intervals.slice(1).forEach((semitones) => {
+      const key = keys[rootIndex + semitones];
+      if (key && key !== rootKey && !parts.includes(key)) parts.push(key);
+    });
+    chordParts.set(rootKey.dataset.noteId, parts);
+
+    parts.forEach((key, i) => {
+      key.dataset.chordPart = '1';
+      staff.addNote(key.dataset.note, Number(key.dataset.octave));
+      // Press the key exactly as a finger would, so it sounds and lights up
+      key.dispatchEvent(new PointerEvent('pointerdown', {
+        bubbles: true, cancelable: true, pointerId: 1000 + i, pointerType: 'mouse'
+      }));
+    });
+  };
+
+  const releaseChord = (rootNoteId) => {
+    const parts = chordParts.get(rootNoteId);
+    if (!parts) return;
+    chordParts.delete(rootNoteId);
+    parts.forEach((key) => {
+      delete key.dataset.chordPart;
+      key.dispatchEvent(new PointerEvent('pointerup', {
+        bubbles: true, pointerId: 1000, pointerType: 'mouse'
+      }));
+    });
+  };
+
   // A piano key that gains the "active" class has just been played
   // (mouse, touch, computer keyboard or the demo all do this).
   new MutationObserver((records) => {
     records.forEach((r) => {
+      if (r.type === 'childList') { // the piano was redrawn (octave change)
+        chordParts.clear();
+        return;
+      }
       const key = r.target;
-      if (!key.classList || !key.classList.contains('active')) return;
-      if ((r.oldValue || '').split(/\s+/).includes('active')) return; // was already held
+      if (!key.classList) return;
+
+      const wasActive = (r.oldValue || '').split(/\s+/).includes('active');
+      const isActive = key.classList.contains('active');
+
+      if (wasActive && !isActive) {          // key let go: let go of its chord too
+        releaseChord(key.dataset.noteId);
+        return;
+      }
+      if (!isActive || wasActive) return;     // not a new press
+      if (key.dataset.chordPart) return;      // pressed for a chord: already drawn
+
       staff.addNote(key.dataset.note, Number(key.dataset.octave));
+      if (chordBox.checked && performance.now() - lastPointerDown < 150) pressChord(key);
     });
   }).observe(piano, {
     subtree: true,
+    childList: true,
     attributes: true,
     attributeFilter: ['class'],
     attributeOldValue: true
