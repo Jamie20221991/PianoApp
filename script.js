@@ -352,6 +352,8 @@ class PianoApp {
     });
     on('tone', 'change', (e) => { this.tone = e.target.value; });
     on('demo-btn', 'click', () => this.playDemo());
+        on('show-names', 'change', (e) => this.staff.setShowNames(e.target.checked));
+    on('staff-clear', 'click', () => this.staff.clear());
 
     const lookup = (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return null;
