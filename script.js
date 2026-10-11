@@ -280,6 +280,7 @@ class PianoApp {
 
     if (keyElement) keyElement.classList.add('active');
     document.getElementById('note-display').textContent = `${note} ${octave}`;
+        this.staff.addNote(note, octave);
   }
 
   stopNote(noteId, keyElement) {
