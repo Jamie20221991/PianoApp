@@ -138,6 +138,7 @@ class PianoApp {
       const inScale = this.isNoteInScale(key.dataset.note);
       key.classList.toggle('in-scale', inScale);
       key.classList.toggle('out-of-scale', !inScale);
+      key.classList.toggle('is-root', key.dataset.note === this.rootNote);
     });
   }
 
@@ -185,7 +186,15 @@ class PianoApp {
         key.dataset.octave = octave;
         key.dataset.noteId = noteId;
         key.setAttribute('aria-label', `${note} ${octave}`);
-        key.textContent = hints[noteId] || '';
+
+        // The note name, with the computer-keyboard letter underneath
+        const nameLabel = document.createElement('span');
+        nameLabel.className = 'note-name';
+        nameLabel.textContent = note;
+        const hintLabel = document.createElement('span');
+        hintLabel.className = 'kbd-hint';
+        hintLabel.textContent = hints[noteId] || '';
+        key.append(nameLabel, hintLabel);
 
         if (isBlack) {
           const centre = o * 7 + this.blackKeyPos[note];
@@ -279,8 +288,7 @@ class PianoApp {
     this.activeNotes.set(noteId, { oscillators, voiceGain, filter, release: settings.release });
 
     if (keyElement) keyElement.classList.add('active');
-    
-        this.staff.addNote(note, octave);
+    document.getElementById('note-display').textContent = `${note} ${octave}`;
   }
 
   stopNote(noteId, keyElement) {
@@ -353,8 +361,6 @@ class PianoApp {
     });
     on('tone', 'change', (e) => { this.tone = e.target.value; });
     on('demo-btn', 'click', () => this.playDemo());
-        
-    
 
     const lookup = (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return null;
