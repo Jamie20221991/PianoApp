@@ -1,5 +1,6 @@
 // StaffReel: shows the notes you play on a scrolling grand staff (treble + bass clef).
 // New notes appear on the right and scroll left, like a tape.
+// This file starts itself (see the bottom), so script.js does not need any changes.
 
 const CLEF_FONT = '"Noto Music", "Segoe UI Symbol", "Apple Symbols", serif';
 
@@ -282,3 +283,51 @@ class StaffReel {
     ctx.stroke();
   }
 }
+
+// ---- Start-up: connects the staff to the page and to the piano keys ---------
+
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('staff');
+  const piano = document.getElementById('piano');
+  if (!canvas || !piano) return;
+
+  const staff = new StaffReel(canvas);
+
+  // "Show note names" checkbox and "Clear" button
+  const names = document.getElementById('show-names');
+  if (names) {
+    names.addEventListener('change', (e) => {
+      staff.setShowNames(e.target.checked);
+      e.target.blur(); // so the computer-keyboard keys keep working
+    });
+  }
+  const clear = document.getElementById('staff-clear');
+  if (clear) {
+    clear.addEventListener('click', (e) => {
+      staff.clear();
+      e.currentTarget.blur();
+    });
+  }
+
+  // A piano key that gains the "active" class has just been played
+  // (mouse, touch, computer keyboard or the demo all do this).
+  new MutationObserver((records) => {
+    records.forEach((r) => {
+      const key = r.target;
+      if (!key.classList || !key.classList.contains('active')) return;
+      if ((r.oldValue || '').split(/\s+/).includes('active')) return; // was already held
+      staff.addNote(key.dataset.note, Number(key.dataset.octave));
+    });
+  }).observe(piano, {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class'],
+    attributeOldValue: true
+  });
+
+  // Changing the Finish rewrites the page's colour variables: redraw in the new colours
+  new MutationObserver(() => {
+    staff.updateColors();
+    staff.draw();
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+});
