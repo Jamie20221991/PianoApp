@@ -279,7 +279,7 @@ class PianoApp {
     this.activeNotes.set(noteId, { oscillators, voiceGain, filter, release: settings.release });
 
     if (keyElement) keyElement.classList.add('active');
-    document.getElementById('note-display').textContent = `${note} ${octave}`;
+    
         this.staff.addNote(note, octave);
   }
 
@@ -353,8 +353,8 @@ class PianoApp {
     });
     on('tone', 'change', (e) => { this.tone = e.target.value; });
     on('demo-btn', 'click', () => this.playDemo());
-        on('show-names', 'change', (e) => this.staff.setShowNames(e.target.checked));
-    on('staff-clear', 'click', () => this.staff.clear());
+        
+    
 
     const lookup = (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return null;
